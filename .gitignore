@@ -1,3 +1,5 @@
 build/
-diff_gaussian_rasterization.egg-info/
+diff_plane_rasterization.egg-info/
 dist/
+diff_plane_rasterization/__pycache__
+diff_plane_rasterization/_C.cpython-311-x86_64-linux-gnu.so
