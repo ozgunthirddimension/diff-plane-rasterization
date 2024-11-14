@@ -55,6 +55,7 @@ RasterizeGaussiansCUDA(
 	const torch::Tensor& campos,
 	const bool prefiltered,
 	const bool render_geo,
+	const float znear,
 	const bool debug)
 {
   if (means3D.ndimension() != 2 || means3D.size(1) != 3) {
@@ -120,6 +121,7 @@ RasterizeGaussiansCUDA(
 		out_all_map.contiguous().data<float>(),
 		out_plane_depth.contiguous().data<float>(),
 		render_geo,
+		znear,
 		debug);
   }
   return std::make_tuple(rendered, out_color, radii, out_observe, out_all_map, out_plane_depth, geomBuffer, binningBuffer, imgBuffer);
@@ -223,7 +225,8 @@ RasterizeGaussiansBackwardCUDA(
 torch::Tensor markVisible(
 		torch::Tensor& means3D,
 		torch::Tensor& viewmatrix,
-		torch::Tensor& projmatrix)
+		torch::Tensor& projmatrix,
+		const float znear)
 {
   const int P = means3D.size(0);
 
@@ -235,7 +238,8 @@ torch::Tensor markVisible(
 		means3D.contiguous().data<float>(),
 		viewmatrix.contiguous().data<float>(),
 		projmatrix.contiguous().data<float>(),
-		present.contiguous().data<bool>());
+		present.contiguous().data<bool>(),
+		znear);
   }
 
   return present;

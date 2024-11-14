@@ -37,6 +37,7 @@ RasterizeGaussiansCUDA(
 	const torch::Tensor& campos,
 	const bool prefiltered,
 	const bool render_geo,
+	const float znear,
 	const bool debug);
 
 std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor>
@@ -71,7 +72,8 @@ RasterizeGaussiansBackwardCUDA(
 torch::Tensor markVisible(
 		torch::Tensor& means3D,
 		torch::Tensor& viewmatrix,
-		torch::Tensor& projmatrix);
+		torch::Tensor& projmatrix,
+		const float znear);
 
 std::tuple<torch::Tensor, torch::Tensor> ComputeRelocationCUDA(
 		torch::Tensor& opacity_old,

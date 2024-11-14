@@ -89,6 +89,7 @@ class _RasterizeGaussians(torch.autograd.Function):
             raster_settings.campos,
             raster_settings.prefiltered,
             raster_settings.render_geo,
+            raster_settings.znear,
             raster_settings.debug
         )
 
@@ -189,6 +190,7 @@ class GaussianRasterizationSettings(NamedTuple):
     prefiltered : bool
     render_geo : bool
     debug : bool
+    znear: float
 
 class GaussianRasterizer(nn.Module):
     def __init__(self, raster_settings):
@@ -202,7 +204,8 @@ class GaussianRasterizer(nn.Module):
             visible = _C.mark_visible(
                 positions,
                 raster_settings.viewmatrix,
-                raster_settings.projmatrix)
+                raster_settings.projmatrix,
+                raster_settings.znear)
 
         return visible
 

@@ -26,7 +26,8 @@ namespace CudaRasterizer
 			float* means3D,
 			float* viewmatrix,
 			float* projmatrix,
-			bool* present);
+			bool* present,
+			const float znear);
 
 		static int forward(
 			std::function<char* (size_t)> geometryBuffer,
@@ -55,6 +56,7 @@ namespace CudaRasterizer
 			float* out_all_map,
 			float* out_plane_depth,
 			const bool render_geo,
+			const float znear,
 			bool debug = false);
 
 		static void backward(

@@ -55,14 +55,15 @@ __global__ void checkFrustum(int P,
 	const float* orig_points,
 	const float* viewmatrix,
 	const float* projmatrix,
-	bool* present)
+	bool* present,
+	const float znear)
 {
 	auto idx = cg::this_grid().thread_rank();
 	if (idx >= P)
 		return;
 
 	float3 p_view;
-	present[idx] = in_frustum(idx, orig_points, viewmatrix, projmatrix, false, p_view);
+	present[idx] = in_frustum(idx, orig_points, viewmatrix, projmatrix, false, p_view, znear);
 }
 
 // Generates one key/value pair for all Gaussian / tile overlaps. 
@@ -143,13 +144,15 @@ void CudaRasterizer::Rasterizer::markVisible(
 	float* means3D,
 	float* viewmatrix,
 	float* projmatrix,
-	bool* present)
+	bool* present,
+	const float znear)
 {
 	checkFrustum << <(P + 255) / 256, 256 >> > (
 		P,
 		means3D,
 		viewmatrix, projmatrix,
-		present);
+		present,
+		znear);
 }
 
 CudaRasterizer::GeometryState CudaRasterizer::GeometryState::fromChunk(char*& chunk, size_t P)
@@ -222,6 +225,7 @@ int CudaRasterizer::Rasterizer::forward(
 	float* out_all_map,
 	float* out_plane_depth,
 	const bool render_geo,
+	const float znear,
 	bool debug)
 {
 	const float focal_y = height / (2.0f * tan_fovy);
@@ -274,7 +278,8 @@ int CudaRasterizer::Rasterizer::forward(
 		geomState.conic_opacity,
 		tile_grid,
 		geomState.tiles_touched,
-		prefiltered
+		prefiltered,
+		znear
 	), debug)
 
 	// Compute prefix sum over full list of touched tile counts by Gaussians
